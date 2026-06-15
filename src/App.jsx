@@ -3,21 +3,9 @@ import { StatusBar, TgHeader, TabBar, Screen, ScrollBody, Pad } from './componen
 import Onboarding from './pages/Onboarding'
 import WorkoutTab from './pages/Workout'
 import ExercisesTab from './pages/Exercises'
+import AnalyticsTab from './pages/Analytics'
 
 
-function AnalyticsTab() {
-  return (
-    <ScrollBody>
-      <Pad>
-        <div style={{ paddingTop: 24, textAlign: 'center' }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>📊</div>
-          <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 8 }}>Аналитика</div>
-          <div style={{ color: 'var(--text2)', fontSize: 14 }}>Этап 7 — графики и статистика</div>
-        </div>
-      </Pad>
-    </ScrollBody>
-  )
-}
 
 function MainApp() {
   const tab = useAppStore(s => s.tab)
