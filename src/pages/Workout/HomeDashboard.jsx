@@ -15,7 +15,7 @@ const MG_NAMES = {
   abs: 'Пресс', cardio: 'Кардио',
 }
 
-export default function HomeDashboard({ onOpenDay }) {
+export default function HomeDashboard({ onOpenDay, onProfile }) {
   const profile        = useAppStore(s => s.profile)
   const program        = useAppStore(s => s.program)
   const cycleDay       = useAppStore(s => s.currentCycleDay)
@@ -51,7 +51,7 @@ export default function HomeDashboard({ onOpenDay }) {
         title="Тренировки"
         sub="FitBot"
         avatar={profile?.name?.[0]?.toUpperCase() ?? 'И'}
-        onAvatar={() => {}}
+        onAvatar={onProfile}
       />
       <ScrollBody>
         <Pad>

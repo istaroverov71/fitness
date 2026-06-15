@@ -4,7 +4,7 @@ import ExerciseList from './ExerciseList'
 import ActiveWorkout from './ActiveWorkout'
 
 // sub-screens within the Workout tab
-export default function WorkoutTab() {
+export default function WorkoutTab({ onProfile }) {
   const [view, setView]           = useState('home')      // 'home' | 'list' | 'active'
   const [selectedDay, setDay]     = useState(null)
   const [activeExIdx, setExIdx]   = useState(0)
@@ -39,5 +39,5 @@ export default function WorkoutTab() {
     )
   }
 
-  return <HomeDashboard onOpenDay={openDay} />
+  return <HomeDashboard onOpenDay={openDay} onProfile={onProfile} />
 }
