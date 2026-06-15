@@ -1,21 +1,7 @@
 import { useAppStore } from './store/appStore'
 import { StatusBar, TgHeader, TabBar, Screen, ScrollBody, Pad } from './components/layout'
 import Onboarding from './pages/Onboarding'
-
-// Placeholder main screens — replaced in later stages
-function WorkoutTab() {
-  return (
-    <ScrollBody>
-      <Pad>
-        <div style={{ paddingTop: 24, textAlign: 'center' }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>💪</div>
-          <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 8 }}>Тренировка</div>
-          <div style={{ color: 'var(--text2)', fontSize: 14 }}>Этап 5 — экраны тренировки</div>
-        </div>
-      </Pad>
-    </ScrollBody>
-  )
-}
+import WorkoutTab from './pages/Workout'
 
 function ExercisesTab() {
   return (
