@@ -32,13 +32,11 @@ export default async function handler(req, res) {
     if (text.startsWith('/start')) {
       await sendMessage(
         chatId,
-        '👋 Привет! Я <b>FitBot</b> — твой персональный фитнес тренер.\n\nНажми кнопку ниже чтобы открыть приложение 💪',
+        '👋 Привет! Я <b>FitBot</b> — твой персональный фитнес тренер.\n\nНажми кнопку ниже чтобы открыть приложение 👇',
         {
-          keyboard: [[
+          inline_keyboard: [[
             { text: '💪 Открыть FitBot', web_app: { url: APP_URL } },
           ]],
-          resize_keyboard: true,
-          persistent: true,
         }
       )
     }
