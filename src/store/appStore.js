@@ -1,100 +1,112 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import { saveWorkoutSession, saveBodyWeight } from '../lib/db'
 
-export const useAppStore = create((set, get) => ({
-  // Navigation
-  screen: 'onboarding', // 'onboarding' | 'main'
-  tab: 'workout',       // 'workout' | 'exercises' | 'analytics'
+const STORAGE_KEY = 'fitbot_v1'
 
-  // User
-  user: null,
-  profile: null,
-  // profile shape: { name, age, sex, weight, height, goal, level, daysPerWeek, goalWeight }
+export const useAppStore = create(
+  persist(
+    (set, get) => ({
+      // Navigation
+      screen: 'onboarding',
+      tab: 'workout',
 
-  // Program (AI-generated)
-  program: null,
-  currentCycleDay: 0,
+      // User
+      user: null,
+      profile: null,
 
-  // Active workout session
-  activeWorkout: null, // { day, startTime }
-  workoutLogs: {},     // exerciseId -> [{ weight, reps, timestamp }]
+      // Program
+      program: null,
+      currentCycleDay: 0,
 
-  // Completed workouts history
-  workoutHistory: [],
-
-  // Body weight log
-  bodyWeightLog: [],
-
-  // ─── Setters (used by useDataSync to hydrate from Supabase) ──────────────────
-  setScreen:       (screen)  => set({ screen }),
-  setTab:          (tab)     => set({ tab }),
-  setUser:         (user)    => set({ user }),
-  setProfile:      (profile) => set({ profile }),
-  setWorkoutHistory: (workoutHistory) => set({ workoutHistory }),
-  setBodyWeightLog:  (bodyWeightLog)  => set({ bodyWeightLog }),
-  setCurrentCycleDay: (currentCycleDay) => set({ currentCycleDay }),
-
-  setProgram: (program) => set((state) => ({
-    program,
-    // Only reset cycleDay when creating a new program (no existing history)
-    currentCycleDay: state.workoutHistory.length > 0 ? state.currentCycleDay : 0,
-  })),
-
-  // ─── Workout actions ──────────────────────────────────────────────────────────
-  startWorkout: (day) => set({
-    activeWorkout: { day, startTime: Date.now() },
-    workoutLogs: {},
-  }),
-
-  logSet: (exerciseId, setData) => set((state) => ({
-    workoutLogs: {
-      ...state.workoutLogs,
-      [exerciseId]: [...(state.workoutLogs[exerciseId] || []), setData],
-    },
-  })),
-
-  finishWorkout: async () => {
-    const state = get()
-    const session = {
-      day:       state.activeWorkout.day,
-      startTime: state.activeWorkout.startTime,
-      endTime:   Date.now(),
-      logs:      state.workoutLogs,
-      cycleDay:  state.currentCycleDay,
-    }
-
-    const newCycleDay = state.currentCycleDay + 1
-
-    set({
+      // Active workout session (not persisted — cleared on restart)
       activeWorkout: null,
       workoutLogs: {},
-      currentCycleDay: newCycleDay,
-      workoutHistory: [{ ...session, id: Date.now() }, ...state.workoutHistory],
-    })
 
-    // Persist to Supabase in background
-    try {
-      const programId = state.program?.id ?? null
-      await saveWorkoutSession(session, programId)
-    } catch (err) {
-      console.error('finishWorkout persist error:', err)
+      // History
+      workoutHistory: [],
+      bodyWeightLog: [],
+
+      // ─── Setters ────────────────────────────────────────────────────────────────
+      setScreen:          (screen)         => set({ screen }),
+      setTab:             (tab)            => set({ tab }),
+      setUser:            (user)           => set({ user }),
+      setProfile:         (profile)        => set({ profile }),
+      setWorkoutHistory:  (workoutHistory) => set({ workoutHistory }),
+      setBodyWeightLog:   (bodyWeightLog)  => set({ bodyWeightLog }),
+      setCurrentCycleDay: (currentCycleDay) => set({ currentCycleDay }),
+
+      setProgram: (program) => set((state) => ({
+        program,
+        currentCycleDay: state.workoutHistory.length > 0 ? state.currentCycleDay : 0,
+      })),
+
+      // ─── Workout actions ──────────────────────────────────────────────────────
+      startWorkout: (day) => set({
+        activeWorkout: { day, startTime: Date.now() },
+        workoutLogs: {},
+      }),
+
+      logSet: (exerciseId, setData) => set((state) => ({
+        workoutLogs: {
+          ...state.workoutLogs,
+          [exerciseId]: [...(state.workoutLogs[exerciseId] || []), setData],
+        },
+      })),
+
+      finishWorkout: async () => {
+        const state = get()
+        const session = {
+          day:       state.activeWorkout.day,
+          startTime: state.activeWorkout.startTime,
+          endTime:   Date.now(),
+          logs:      state.workoutLogs,
+          cycleDay:  state.currentCycleDay,
+        }
+
+        set({
+          activeWorkout: null,
+          workoutLogs: {},
+          currentCycleDay: state.currentCycleDay + 1,
+          workoutHistory: [{ ...session, id: Date.now() }, ...state.workoutHistory],
+        })
+
+        try {
+          await saveWorkoutSession(session, state.program?.id ?? null)
+        } catch (err) {
+          console.error('finishWorkout persist error:', err)
+        }
+
+        return session
+      },
+
+      addBodyWeight: async (weight) => {
+        set((state) => ({
+          bodyWeightLog: [
+            { weight, date: new Date().toISOString() },
+            ...state.bodyWeightLog,
+          ],
+        }))
+
+        try {
+          await saveBodyWeight(weight)
+        } catch (err) {
+          console.error('addBodyWeight persist error:', err)
+        }
+      },
+    }),
+    {
+      name: STORAGE_KEY,
+      storage: createJSONStorage(() => localStorage),
+      // Only persist what matters — skip transient UI state
+      partialize: (state) => ({
+        screen:          state.screen,
+        profile:         state.profile,
+        program:         state.program,
+        currentCycleDay: state.currentCycleDay,
+        workoutHistory:  state.workoutHistory,
+        bodyWeightLog:   state.bodyWeightLog,
+      }),
     }
-
-    return session
-  },
-
-  addBodyWeight: async (weight) => {
-    set((state) => ({
-      bodyWeightLog: [
-        { weight, date: new Date().toISOString() },
-        ...state.bodyWeightLog,
-      ],
-    }))
-
-    try {
-      await saveBodyWeight(weight)
-    } catch (err) {
-      console.error('addBodyWeight persist error:', err)
-    }
-  },
-}))
+  )
+)
