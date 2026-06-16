@@ -3,7 +3,6 @@ import { useAppStore } from '../../store/appStore'
 import { Screen, ScrollBody, Pad, StatusBar, TgHeader } from '../../components/layout'
 import { Icon, Stepper, AreaChart } from '../../components/ui'
 import { haptic } from '../../lib/telegram'
-
 const LEVEL_NAMES = { beginner: 'Новичок', amateur: 'Любитель', pro: 'Опытный' }
 const GOAL_NAMES  = { mass: 'Набор массы', cut: 'Похудение' }
 
@@ -12,10 +11,26 @@ export default function ProfileScreen({ onBack, onEdit }) {
   const bodyWeightLog = useAppStore(s => s.bodyWeightLog)
   const addBodyWeight = useAppStore(s => s.addBodyWeight)
   const history       = useAppStore(s => s.workoutHistory)
+  const setScreen     = useAppStore(s => s.setScreen)
 
   const currentWeight = bodyWeightLog[0]?.weight ?? profile?.weight ?? 80
   const [weight, setWeight] = useState(currentWeight)
   const [saved,  setSaved]  = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+
+  const handleDeleteAccount = () => {
+    if (!confirmDelete) {
+      haptic('warning')
+      setConfirmDelete(true)
+      setTimeout(() => setConfirmDelete(false), 4000)
+      return
+    }
+    haptic('error')
+    // Clear localStorage and reset store to initial state
+    localStorage.removeItem('fitbot_v1')
+    setScreen('onboarding')
+    window.location.reload()
+  }
 
   const chartValues = bodyWeightLog.slice(0, 8).reverse().map(e => e.weight)
 
@@ -158,6 +173,28 @@ export default function ProfileScreen({ onBack, onEdit }) {
               <Icon d="chev" size={16} color="#5a5a5a" />
             </div>
           ))}
+
+          {/* Delete account */}
+          <div style={{ marginTop: 32, paddingTop: 20, borderTop: '1px solid var(--divider)' }}>
+            <button
+              onClick={handleDeleteAccount}
+              style={{
+                width: '100%',
+                padding: '14px',
+                borderRadius: 'var(--radius)',
+                border: confirmDelete ? '1.5px solid #FF3B30' : '1.5px solid var(--divider)',
+                background: confirmDelete ? 'rgba(255,59,48,0.1)' : 'transparent',
+                color: confirmDelete ? '#FF3B30' : 'var(--text2)',
+                fontSize: 15,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                fontFamily: 'inherit',
+              }}
+            >
+              {confirmDelete ? '⚠️ Нажми ещё раз — все данные удалятся' : 'Удалить аккаунт и начать заново'}
+            </button>
+          </div>
 
           <div style={{ height: 24 }} />
         </Pad>
