@@ -6,21 +6,35 @@ import ActiveWorkout from './ActiveWorkout'
 
 export default function WorkoutTab({ onProfile }) {
   const storeStartWorkout = useAppStore(s => s.startWorkout)
+  const activeWorkout     = useAppStore(s => s.activeWorkout)
+  const workoutLogs       = useAppStore(s => s.workoutLogs)
 
-  const [view, setView]         = useState('home')
-  const [selectedDay, setDay]   = useState(null)
-  const [activeExIdx, setExIdx] = useState(0)
+  // If there's an active workout persisted, resume it immediately
+  const resumeExIdx = () => {
+    if (!activeWorkout) return 0
+    const exercises = activeWorkout.day?.exercises ?? []
+    for (let i = 0; i < exercises.length; i++) {
+      const done = workoutLogs[exercises[i].id]?.length ?? 0
+      if (done < (exercises[i].sets ?? 4)) return i
+    }
+    return Math.max(0, exercises.length - 1)
+  }
+
+  const [view, setView]         = useState(activeWorkout ? 'active' : 'home')
+  const [selectedDay, setDay]   = useState(activeWorkout?.day ?? null)
+  const [activeExIdx, setExIdx] = useState(resumeExIdx)
 
   const openDay = (day) => { setDay(day); setView('list') }
 
   const startWorkout = () => {
-    storeStartWorkout(selectedDay)   // ← records startTime in store
+    storeStartWorkout(selectedDay)
     setExIdx(0)
     setView('active')
   }
 
-  const goHome  = () => setView('home')
-  const nextEx  = (idx) => {
+  const goHome = () => setView('home')
+
+  const nextEx = (idx) => {
     if (idx < selectedDay.exercises.length - 1) setExIdx(idx + 1)
     else goHome()
   }
