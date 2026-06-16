@@ -183,6 +183,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-bottom: 16px;
 }
 
 .field label {
@@ -206,6 +207,7 @@ body {
   transition: border-color var(--transition), box-shadow var(--transition);
   appearance: none;
   -webkit-appearance: none;
+  box-sizing: border-box;
 }
 
 .input::placeholder {
@@ -218,23 +220,25 @@ body {
   box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.12);
 }
 
-.input-unit-wrap {
+/* input with unit suffix — JSX: <div className="input-unit"><input/><span className="u">кг</span></div> */
+.input-unit {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.input-unit-wrap .input {
-  padding-right: 48px;
+.input-unit .input {
+  padding-right: 44px;
 }
 
-.input-unit {
+.u {
   position: absolute;
-  right: 16px;
+  right: 14px;
   font-size: 14px;
   font-weight: 600;
   color: var(--text2);
   pointer-events: none;
+  white-space: nowrap;
 }
 
 /* ─── Segmented Toggle ───────────────────────────────────────── */
@@ -246,9 +250,11 @@ body {
   gap: 2px;
 }
 
+/* supports both .seg-btn and bare <button> children */
+.seg button,
 .seg-btn {
   flex: 1;
-  padding: 10px 8px;
+  padding: 11px 8px;
   border: none;
   border-radius: calc(var(--radius) - 3px);
   background: transparent;
@@ -261,10 +267,12 @@ body {
   white-space: nowrap;
 }
 
-.seg-btn.active {
-  background: var(--card);
-  color: var(--text);
-  box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+.seg button.on,
+.seg-btn.active,
+.seg button.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 6px rgba(255,59,48,0.4);
 }
 
 /* ─── Chips ──────────────────────────────────────────────────── */
@@ -302,24 +310,30 @@ body {
 .steps {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
+  margin-bottom: 4px;
 }
 
-.step-dot {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--divider);
-  transition: width var(--transition), background var(--transition);
+.steps-track {
   flex: 1;
+  height: 4px;
+  background: var(--divider);
+  border-radius: 2px;
+  overflow: hidden;
 }
 
-.step-dot.done {
+.steps-fill {
+  height: 100%;
   background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.4s ease;
 }
 
-.step-dot.active {
-  background: var(--accent);
-  box-shadow: 0 0 8px rgba(255, 59, 48, 0.5);
+.steps-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  white-space: nowrap;
 }
 
 /* ─── Range Slider ───────────────────────────────────────────── */

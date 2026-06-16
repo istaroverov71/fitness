@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { useAppStore } from '../../store/appStore'
 import { Screen, ScrollBody, Pad, StatusBar, TgHeader } from '../../components/layout'
 
-function Steps({ current, total = 2 }) {
+function Steps({ current, total = 3 }) {
   return (
     <div className="steps">
       <div className="steps-track">
         <div className="steps-fill" style={{ width: `${(current / total) * 100}%` }} />
       </div>
-      <span className="steps-label">{current} / {total}</span>
+      <span className="steps-label">Шаг {current} из {total}</span>
     </div>
   )
 }
