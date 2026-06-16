@@ -18,6 +18,8 @@
   --radius-xl: 28px;
 
   --transition: 0.18s ease;
+  --pad: 20px;
+  --pad-safe: env(safe-area-inset-bottom, 16px);
 }
 
 /* ─── Reset ─────────────────────────────────────────────────── */
@@ -130,12 +132,15 @@ body {
   transform: scale(0.97);
 }
 
+/* .cta.block is the default primary red button used throughout the app */
+.cta.block,
 .cta-primary {
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
   color: #fff;
   box-shadow: 0 4px 24px rgba(255, 59, 48, 0.35);
 }
 
+.cta.block:active,
 .cta-primary:active {
   box-shadow: 0 2px 12px rgba(255, 59, 48, 0.25);
 }
@@ -159,9 +164,10 @@ body {
 }
 
 .cta:disabled {
-  opacity: 0.4;
+  opacity: 0.38;
   cursor: not-allowed;
   transform: none;
+  pointer-events: none;
 }
 
 .cta-sm {
