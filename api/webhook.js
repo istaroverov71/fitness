@@ -1,7 +1,7 @@
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN
 const APP_URL = 'https://fitness-beta-sage.vercel.app'
 
-async function sendMessage(chatId, text) {
+async function sendMessage(chatId, text, extra = {}) {
   await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -9,6 +9,7 @@ async function sendMessage(chatId, text) {
       chat_id: chatId,
       text,
       parse_mode: 'HTML',
+      ...extra,
     }),
   })
 }
@@ -31,7 +32,9 @@ export default async function handler(req, res) {
     if (text.startsWith('/start')) {
       await sendMessage(
         chatId,
-        '👋 Привет! Я <b>FitBot</b> — твой персональный фитнес тренер.\n\nОткрой приложение кнопкой <b>OPEN</b> рядом с моим именем в списке чатов 💪'
+        '👋 Привет! Я <b>FitBot</b> — твой персональный фитнес тренер.\n\nОткрой приложение кнопкой <b>OPEN</b> рядом с моим именем в списке чатов 💪',
+        // remove_keyboard clears the leftover persistent reply keyboard
+        { reply_markup: { remove_keyboard: true } }
       )
     }
   } catch (err) {
