@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Screen, ScrollBody, Pad, StatusBar, TgHeader } from '../../components/layout'
+import { Screen, ScrollBody, Pad, TgHeader } from '../../components/layout'
 import { Icon } from '../../components/ui'
 import { MUSCLE_GROUPS, getExerciseCountByGroup } from '../../lib/exercises'
 import { haptic } from '../../lib/telegram'
@@ -24,7 +24,6 @@ export default function MuscleGroups({ onPick }) {
 
   return (
     <Screen>
-      <StatusBar />
       <TgHeader title="Упражнения" sub="справочник" />
       <ScrollBody>
         <Pad>

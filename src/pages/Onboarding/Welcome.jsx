@@ -1,4 +1,4 @@
-import { Screen, ScrollBody, StatusBar } from '../../components/layout'
+import { Screen, ScrollBody } from '../../components/layout'
 
 function Logo() {
   return (
@@ -17,7 +17,6 @@ function Logo() {
 export default function Welcome({ onNext }) {
   return (
     <Screen>
-      <StatusBar />
       <ScrollBody>
         {/* Glow background */}
         <div style={{

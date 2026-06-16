@@ -1,5 +1,5 @@
 import { useAppStore } from '../../store/appStore'
-import { Screen, ScrollBody, Pad, StatusBar, TgHeader } from '../../components/layout'
+import { Screen, ScrollBody, Pad, TgHeader } from '../../components/layout'
 import { Ring, ExerciseImage } from '../../components/ui'
 import { haptic } from '../../lib/telegram'
 
@@ -15,7 +15,6 @@ export default function ExerciseList({ day, onBack, onStart }) {
 
   return (
     <Screen>
-      <StatusBar />
       <TgHeader title={day.name} sub={`${day.exercises.length} упражнений`} back="Назад" onBack={onBack} />
       <ScrollBody>
         <Pad>

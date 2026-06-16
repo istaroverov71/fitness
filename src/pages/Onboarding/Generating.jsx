@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAppStore } from '../../store/appStore'
-import { Screen, StatusBar } from '../../components/layout'
+import { Screen } from '../../components/layout'
 import { generateProgram } from '../../lib/programGenerator'
 import { persistProfile, persistProgram } from '../../lib/useDataSync'
 
@@ -50,7 +50,6 @@ export default function Generating() {
 
   return (
     <Screen>
-      <StatusBar />
       <div style={{
         flex: 1, display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',

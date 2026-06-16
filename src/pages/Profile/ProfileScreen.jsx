@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAppStore } from '../../store/appStore'
-import { Screen, ScrollBody, Pad, StatusBar, TgHeader } from '../../components/layout'
+import { Screen, ScrollBody, Pad, TgHeader } from '../../components/layout'
 import { Icon, Stepper, AreaChart } from '../../components/ui'
 import { haptic } from '../../lib/telegram'
 const LEVEL_NAMES = { beginner: 'Новичок', amateur: 'Любитель', pro: 'Опытный' }
@@ -47,7 +47,6 @@ export default function ProfileScreen({ onBack, onEdit }) {
 
   return (
     <Screen>
-      <StatusBar />
       <TgHeader
         title="Профиль"
         sub="FitBot"

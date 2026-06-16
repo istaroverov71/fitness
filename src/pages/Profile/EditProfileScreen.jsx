@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAppStore } from '../../store/appStore'
-import { Screen, ScrollBody, Pad, StatusBar, TgHeader } from '../../components/layout'
+import { Screen, ScrollBody, Pad, TgHeader } from '../../components/layout'
 import { Icon } from '../../components/ui'
 import { haptic } from '../../lib/telegram'
 import { persistProfile } from '../../lib/useDataSync'
@@ -50,7 +50,6 @@ export default function EditProfileScreen({ onBack }) {
 
   return (
     <Screen>
-      <StatusBar />
       <TgHeader title="Личные данные" sub="редактирование" back="Профиль" onBack={onBack} />
       <ScrollBody>
         <Pad>

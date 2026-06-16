@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAppStore } from '../../store/appStore'
-import { Screen, ScrollBody, Pad, StatusBar, TgHeader } from '../../components/layout'
+import { Screen, ScrollBody, Pad, TgHeader } from '../../components/layout'
 import { Icon, Stepper, ExerciseImage } from '../../components/ui'
 import { haptic } from '../../lib/telegram'
 
@@ -96,7 +96,6 @@ export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx }
   if (showDone) {
     return (
       <Screen>
-        <StatusBar />
         <div style={{
           flex: 1, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
@@ -117,7 +116,6 @@ export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx }
 
   return (
     <Screen>
-      <StatusBar />
       <TgHeader
         title={`${exIdx + 1} / ${totalEx} · ${exercise.muscleGroup}`}
         sub={exercise.name}

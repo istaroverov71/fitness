@@ -1,5 +1,5 @@
 import { useAppStore } from '../../store/appStore'
-import { Screen, ScrollBody, Pad, StatusBar, TgHeader } from '../../components/layout'
+import { Screen, ScrollBody, Pad, TgHeader } from '../../components/layout'
 import { Icon, ExerciseImage, AreaChart } from '../../components/ui'
 import { MUSCLE_GROUPS } from '../../lib/exercises'
 
@@ -31,7 +31,6 @@ export default function ExerciseDetail({ exercise, onBack }) {
 
   return (
     <Screen>
-      <StatusBar />
       <TgHeader
         title={MUSCLE_NAME[exercise.muscleGroup] ?? 'Упражнение'}
         sub={exercise.name}

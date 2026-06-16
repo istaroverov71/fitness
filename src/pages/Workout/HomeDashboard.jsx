@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAppStore } from '../../store/appStore'
-import { Screen, ScrollBody, Pad, StatusBar, TgHeader } from '../../components/layout'
+import { Screen, ScrollBody, Pad, TgHeader } from '../../components/layout'
 import { Icon, Ring, PillTabs } from '../../components/ui'
 import { haptic } from '../../lib/telegram'
 
@@ -46,7 +46,6 @@ export default function HomeDashboard({ onOpenDay, onProfile }) {
 
   return (
     <Screen>
-      <StatusBar />
       <TgHeader
         title="Тренировки"
         sub="FitBot"

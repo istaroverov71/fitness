@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAppStore } from '../../store/appStore'
-import { Screen, ScrollBody, Pad, StatusBar, TgHeader } from '../../components/layout'
+import { Screen, ScrollBody, Pad, TgHeader } from '../../components/layout'
 import { Icon } from '../../components/ui'
 
 function Steps({ current, total = 3 }) {
@@ -41,7 +41,6 @@ export default function GoalLevel({ onNext, onBack }) {
 
   return (
     <Screen>
-      <StatusBar />
       <TgHeader back="Назад" onBack={onBack} />
       <ScrollBody>
         <Pad>

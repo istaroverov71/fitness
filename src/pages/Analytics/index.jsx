@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAppStore } from '../../store/appStore'
-import { Screen, ScrollBody, Pad, StatusBar, TgHeader } from '../../components/layout'
+import { Screen, ScrollBody, Pad, TgHeader } from '../../components/layout'
 import { PillTabs, AreaChart, BarChart, Donut, Ring } from '../../components/ui'
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -281,7 +281,6 @@ export default function AnalyticsTab() {
 
   return (
     <Screen>
-      <StatusBar />
       <TgHeader title="Аналитика" sub="твой прогресс" />
       <ScrollBody>
         <Pad>
