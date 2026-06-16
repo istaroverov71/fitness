@@ -3,6 +3,7 @@ import { useAppStore } from '../../store/appStore'
 import { Screen, ScrollBody, Pad, StatusBar, TgHeader } from '../../components/layout'
 import { Icon } from '../../components/ui'
 import { haptic } from '../../lib/telegram'
+import { persistProfile } from '../../lib/useDataSync'
 
 const GOALS = [
   { id: 'mass', label: 'Набор массы' },
@@ -30,7 +31,7 @@ export default function EditProfileScreen({ onBack }) {
 
   const handleSave = () => {
     haptic('medium')
-    setProfile({
+    const updated = {
       ...profile,
       name: name.trim(),
       age: +age || profile?.age,
@@ -40,7 +41,9 @@ export default function EditProfileScreen({ onBack }) {
       goal,
       level,
       daysPerWeek: days,
-    })
+    }
+    setProfile(updated)
+    persistProfile(updated)
     setSaved(true)
     setTimeout(() => { setSaved(false); onBack() }, 800)
   }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAppStore } from '../../store/appStore'
 import { Screen, StatusBar } from '../../components/layout'
 import { generateProgram } from '../../lib/programGenerator'
+import { persistProfile, persistProgram } from '../../lib/useDataSync'
 
 const STEPS = [
   'Анализирую твои параметры...',
@@ -26,13 +27,20 @@ export default function Generating() {
       setProgress(p => Math.min(p + 20, 95))
     }, 700)
 
-    // Generate program
-    generateProgram(profile).then(program => {
+    // Generate program and persist to Supabase
+    generateProgram(profile).then(async (program) => {
       clearInterval(interval)
       setProgress(100)
       setStepIdx(STEPS.length - 1)
+
+      // Save profile and program to DB (non-blocking — don't block UI)
+      persistProfile(profile)
+      const saved = await persistProgram(program)
+      // If DB save returned an id, attach it so future sessions load this program
+      const finalProgram = saved?.id ? { ...program, id: saved.id } : program
+
       setTimeout(() => {
-        setProgram(program)
+        setProgram(finalProgram)
         setScreen('main')
       }, 600)
     })

@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { saveWorkoutSession, saveBodyWeight } from '../lib/db'
 
 export const useAppStore = create((set, get) => ({
   // Navigation
@@ -12,8 +13,7 @@ export const useAppStore = create((set, get) => ({
 
   // Program (AI-generated)
   program: null,
-  // program shape: { id, name, goal, weeks: [ { days: [ { name, exercises: [...] } ] } ] }
-  currentCycleDay: 0, // which day in the infinite cycle we're on
+  currentCycleDay: 0,
 
   // Active workout session
   activeWorkout: null, // { day, startTime }
@@ -23,17 +23,24 @@ export const useAppStore = create((set, get) => ({
   workoutHistory: [],
 
   // Body weight log
-  bodyWeightLog: [], // [{ weight, date }]
+  bodyWeightLog: [],
 
-  // Actions
-  setScreen: (screen) => set({ screen }),
-  setTab: (tab) => set({ tab }),
-  setUser: (user) => set({ user }),
+  // ─── Setters (used by useDataSync to hydrate from Supabase) ──────────────────
+  setScreen:       (screen)  => set({ screen }),
+  setTab:          (tab)     => set({ tab }),
+  setUser:         (user)    => set({ user }),
+  setProfile:      (profile) => set({ profile }),
+  setWorkoutHistory: (workoutHistory) => set({ workoutHistory }),
+  setBodyWeightLog:  (bodyWeightLog)  => set({ bodyWeightLog }),
+  setCurrentCycleDay: (currentCycleDay) => set({ currentCycleDay }),
 
-  setProfile: (profile) => set({ profile }),
+  setProgram: (program) => set((state) => ({
+    program,
+    // Only reset cycleDay when creating a new program (no existing history)
+    currentCycleDay: state.workoutHistory.length > 0 ? state.currentCycleDay : 0,
+  })),
 
-  setProgram: (program) => set({ program, currentCycleDay: 0 }),
-
+  // ─── Workout actions ──────────────────────────────────────────────────────────
   startWorkout: (day) => set({
     activeWorkout: { day, startTime: Date.now() },
     workoutLogs: {},
@@ -46,29 +53,48 @@ export const useAppStore = create((set, get) => ({
     },
   })),
 
-  finishWorkout: () => {
+  finishWorkout: async () => {
     const state = get()
     const session = {
-      id: Date.now(),
-      day: state.activeWorkout.day,
+      day:       state.activeWorkout.day,
       startTime: state.activeWorkout.startTime,
-      endTime: Date.now(),
-      logs: state.workoutLogs,
-      cycleDay: state.currentCycleDay,
+      endTime:   Date.now(),
+      logs:      state.workoutLogs,
+      cycleDay:  state.currentCycleDay,
     }
+
+    const newCycleDay = state.currentCycleDay + 1
+
     set({
       activeWorkout: null,
       workoutLogs: {},
-      currentCycleDay: state.currentCycleDay + 1,
-      workoutHistory: [session, ...state.workoutHistory],
+      currentCycleDay: newCycleDay,
+      workoutHistory: [{ ...session, id: Date.now() }, ...state.workoutHistory],
     })
+
+    // Persist to Supabase in background
+    try {
+      const programId = state.program?.id ?? null
+      await saveWorkoutSession(session, programId)
+    } catch (err) {
+      console.error('finishWorkout persist error:', err)
+    }
+
     return session
   },
 
-  addBodyWeight: (weight) => set((state) => ({
-    bodyWeightLog: [
-      { weight, date: new Date().toISOString() },
-      ...state.bodyWeightLog,
-    ],
-  })),
+  addBodyWeight: async (weight) => {
+    set((state) => ({
+      bodyWeightLog: [
+        { weight, date: new Date().toISOString() },
+        ...state.bodyWeightLog,
+      ],
+    }))
+
+    try {
+      await saveBodyWeight(weight)
+    } catch (err) {
+      console.error('addBodyWeight persist error:', err)
+    }
+  },
 }))

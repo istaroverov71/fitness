@@ -6,6 +6,7 @@ import WorkoutTab from './pages/Workout'
 import ExercisesTab from './pages/Exercises'
 import AnalyticsTab from './pages/Analytics'
 import Profile from './pages/Profile'
+import { useDataSync } from './lib/useDataSync'
 
 function MainApp() {
   const tab     = useAppStore(s => s.tab)
@@ -27,6 +28,10 @@ function MainApp() {
 
 export default function App() {
   const screen = useAppStore(s => s.screen)
+
+  // Sync with Supabase on mount — runs once, before any navigation decision
+  useDataSync()
+
   if (screen === 'onboarding') return <Onboarding />
   return <MainApp />
 }
