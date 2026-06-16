@@ -117,15 +117,15 @@ export default function ActiveWorkout({ day, exIdx, onBack, onNext, onDone }) {
     .filter(s => s.logs?.[exercise?.id]?.length > 0)
     .map(s => ({ dateTs: s.startTime || s.id, sets: s.logs[exercise.id] }))
 
-  const [weight,   setWeight]   = useState(() => recommendedWeight ?? 20)
-  const [reps,     setReps]     = useState(12)
+  const [weight,   setWeight]   = useState('')
+  const [reps,     setReps]     = useState('')
   const [resting,  setResting]  = useState(false)
   const [showDone, setShowDone] = useState(false)
   const [saving,   setSaving]   = useState(false)
 
   useEffect(() => {
-    setWeight(recommendedWeight ?? 20)
-    setReps(12)
+    setWeight('')
+    setReps('')
     setResting(false)
   }, [exIdx]) // eslint-disable-line react-hooks/exhaustive-deps
 
