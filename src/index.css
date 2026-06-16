@@ -306,7 +306,8 @@ body {
   transform: scale(0.95);
 }
 
-.chip.active {
+.chip.active,
+.chip.on {
   background: rgba(255, 59, 48, 0.15);
   border-color: var(--accent);
   color: var(--accent);
@@ -349,11 +350,26 @@ body {
   gap: 10px;
 }
 
+.slider-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 8px 0 4px;
+}
+
 .slider-val {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 800;
   color: var(--text);
   letter-spacing: -1px;
+  line-height: 1;
+}
+
+.slider-val small {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text2);
+  letter-spacing: 0;
 }
 
 .slider-val span {
@@ -362,6 +378,21 @@ body {
   color: var(--text2);
   margin-left: 4px;
   letter-spacing: 0;
+}
+
+.rng-ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding: 0 2px;
+}
+
+.rng-ticks span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  width: 20px;
+  text-align: center;
 }
 
 input[type="range"] {
@@ -408,6 +439,66 @@ input[type="range"]::-moz-range-thumb {
   gap: 10px;
 }
 
+/* Row-style goal card used in GoalLevel onboarding */
+.goal {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--elev);
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.goal:active {
+  transform: scale(0.98);
+}
+
+.goal.on {
+  border-color: var(--accent);
+  background: rgba(255, 59, 48, 0.08);
+}
+
+.goal-emoji {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.goal-t {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.goal-d {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+.goal-check {
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--divider);
+  display: grid;
+  place-items: center;
+  transition: background var(--transition);
+}
+
+.goal.on .goal-check {
+  background: var(--accent);
+}
+
+/* Grid-style goal card used elsewhere */
 .goal-card {
   display: flex;
   flex-direction: column;
@@ -425,7 +516,8 @@ input[type="range"]::-moz-range-thumb {
   transform: scale(0.97);
 }
 
-.goal-card.active {
+.goal-card.active,
+.goal-card.on {
   border-color: var(--accent);
   background: rgba(255, 59, 48, 0.08);
 }

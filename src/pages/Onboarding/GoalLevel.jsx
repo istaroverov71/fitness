@@ -31,7 +31,7 @@ export default function GoalLevel({ onNext, onBack }) {
 
   const [goal,       setGoal]       = useState(profile?.goal       ?? 'mass')
   const [level,      setLevel]      = useState(profile?.level      ?? 'amateur')
-  const [days,       setDays]       = useState(profile?.daysPerWeek ?? 4)
+  const [days,       setDays]       = useState(profile?.daysPerWeek ?? 3)
   const [goalWeight, setGoalWeight] = useState(profile?.goalWeight  ?? '')
 
   const handleNext = () => {
@@ -100,19 +100,18 @@ export default function GoalLevel({ onNext, onBack }) {
           {/* Days per week */}
           <p className="sec">Тренировок в неделю</p>
           <div className="slider-head">
-            <div className="slider-val">
-              {days}<small> раза в нед.</small>
-            </div>
+            <span className="slider-val">{days}</span>
+            <small style={{ fontSize: 15, fontWeight: 500, color: 'var(--text2)' }}>раза в нед.</small>
           </div>
           <input
             type="range"
             className="rng"
-            min={2} max={6} step={1}
+            min={1} max={7} step={1}
             value={days}
             onChange={e => setDays(+e.target.value)}
           />
           <div className="rng-ticks">
-            <span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
           </div>
 
           <button
