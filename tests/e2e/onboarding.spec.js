@@ -48,7 +48,7 @@ test('Full AboutYou form → "Далее" becomes enabled and advances', async (
   await next.click()
 
   // Should advance to goal/level screen
-  await expect(page.getByText('Выбери цель')).toBeVisible()
+  await expect(page.getByText('Твоя цель')).toBeVisible()
 })
 
 test('Sex toggle switches between Мужской and Женский', async ({ page }) => {
@@ -87,7 +87,7 @@ test('GoalLevel: can pick goal, level, days and generate program', async ({ page
   await page.getByRole('button', { name: 'Далее' }).click()
 
   // GoalLevel
-  await expect(page.getByText('Выбери цель')).toBeVisible()
+  await expect(page.getByText('Твоя цель')).toBeVisible()
 
   // Pick "Похудение"
   await page.getByText('Похудение').click()

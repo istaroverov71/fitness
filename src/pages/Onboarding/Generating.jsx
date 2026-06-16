@@ -33,8 +33,8 @@ export default function Generating() {
       setProgress(100)
       setStepIdx(STEPS.length - 1)
 
-      // Save profile and program to DB (non-blocking — don't block UI)
-      persistProfile(profile)
+      // Save profile first so program foreign key resolve succeeds
+      await persistProfile(profile)
       const saved = await persistProgram(program)
       // If DB save returned an id, attach it so future sessions load this program
       const finalProgram = saved?.id ? { ...program, id: saved.id } : program

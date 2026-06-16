@@ -62,15 +62,15 @@ function Overview({ history }) {
   const totalTonnage  = history.reduce((a, s) => a + totalVolume(s.logs) / 1000, 0)
   const totalTime     = history.reduce((a, s) => a + (s.endTime - s.startTime) / 3600000, 0)
 
-  // Streak — consecutive days with workouts
+  // Streak — consecutive unique days ending today or yesterday
+  const daySet = new Set(
+    history.map(s => { const d = new Date(s.startTime); d.setHours(0,0,0,0); return d.getTime() })
+  )
+  const today = new Date(); today.setHours(0,0,0,0)
+  let checkDay = today.getTime()
+  if (!daySet.has(checkDay)) checkDay -= 86400000
   let streak = 0
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  for (const s of history) {
-    const d = new Date(s.startTime); d.setHours(0, 0, 0, 0)
-    const diff = (today - d) / 86400000
-    if (diff <= streak + 1) streak++
-    else break
-  }
+  while (daySet.has(checkDay)) { streak++; checkDay -= 86400000 }
 
   const stats = [
     { v: totalWorkouts,               unit: '',   label: 'Тренировок',      trend: history.length > 0 ? `+${history.slice(0,4).length} за мес.` : '—' },

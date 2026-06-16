@@ -6,12 +6,16 @@ import { haptic } from '../../lib/telegram'
 
 function RestTimer({ seconds, onDone }) {
   const [left, setLeft] = useState(seconds)
+  const calledRef = { current: false }
 
   useEffect(() => {
-    if (left <= 0) { onDone?.(); return }
+    if (left <= 0) {
+      if (!calledRef.current) { calledRef.current = true; onDone?.() }
+      return
+    }
     const t = setTimeout(() => setLeft(l => l - 1), 1000)
     return () => clearTimeout(t)
-  }, [left])
+  }, [left]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const pct = (left / seconds) * 100
   const min = Math.floor(left / 60)
@@ -50,23 +54,23 @@ function RestTimer({ seconds, onDone }) {
   )
 }
 
-export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx }) {
-  const logSet      = useAppStore(s => s.logSet)
-  const workoutLogs = useAppStore(s => s.workoutLogs)
+export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx, onDone }) {
+  const logSet        = useAppStore(s => s.logSet)
+  const workoutLogs   = useAppStore(s => s.workoutLogs)
   const finishWorkout = useAppStore(s => s.finishWorkout)
 
-  const exercise = day.exercises[exIdx]
-  const totalEx  = day.exercises.length
-  const doneSets = workoutLogs[exercise?.id] ?? []
+  const exercise   = day.exercises[exIdx]
+  const totalEx    = day.exercises.length
+  const doneSets   = workoutLogs[exercise?.id] ?? []
   const targetSets = exercise?.sets ?? 4
-  const finished = doneSets.length >= targetSets
+  const finished   = doneSets.length >= targetSets
 
-  const [weight,    setWeight]    = useState(20)
-  const [reps,      setReps]      = useState(12)
-  const [resting,   setResting]   = useState(false)
-  const [showDone,  setShowDone]  = useState(false)
+  const [weight,   setWeight]   = useState(20)
+  const [reps,     setReps]     = useState(12)
+  const [resting,  setResting]  = useState(false)
+  const [showDone, setShowDone] = useState(false)
+  const [saving,   setSaving]   = useState(false)
 
-  // Reset inputs when exercise changes
   useEffect(() => {
     setWeight(20); setReps(12); setResting(false)
   }, [exIdx])
@@ -77,19 +81,31 @@ export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx }
     if (finished) return
     haptic('medium')
     logSet(exercise.id, { weight, reps, timestamp: Date.now() })
-    if (doneSets.length + 1 < targetSets) {
-      setResting(true)
-    }
+    if (doneSets.length + 1 < targetSets) setResting(true)
   }
 
-  const handleNextEx = () => {
+  const handleResetSet = () => {
+    haptic('light')
+    setWeight(20)
+    setReps(exercise.reps ? parseInt(exercise.reps) || 12 : 12)
+    setResting(false)
+  }
+
+  const handleNextEx = async () => {
     haptic('light')
     if (exIdx < totalEx - 1) {
       onNext()
     } else {
-      // Last exercise — finish workout
-      setShowDone(true)
-      finishWorkout()
+      setSaving(true)
+      try {
+        await finishWorkout()
+        setShowDone(true)
+      } catch (err) {
+        console.error('Finish workout error:', err)
+        setShowDone(true) // still show done — data is in localStorage
+      } finally {
+        setSaving(false)
+      }
     }
   }
 
@@ -106,7 +122,7 @@ export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx }
           <p className="muted" style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 40 }}>
             Отличная работа! Результаты<br />сохранены в аналитике.
           </p>
-          <button className="cta block" onClick={onBack} style={{ maxWidth: 300 }}>
+          <button className="cta block" onClick={onDone} style={{ maxWidth: 300 }}>
             На главную
           </button>
         </div>
@@ -126,20 +142,17 @@ export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx }
         <Pad>
           {/* Side buttons */}
           <div style={{ position: 'absolute', right: 16, top: 106, zIndex: 5, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{
-              width: 42, height: 42, borderRadius: 12, background: 'var(--card)',
-              display: 'grid', placeItems: 'center', color: 'var(--text2)',
-              border: '1px solid var(--divider)', cursor: 'pointer',
-            }}>
+            <button
+              onClick={handleResetSet}
+              title="Сбросить ввод"
+              style={{
+                width: 42, height: 42, borderRadius: 12, background: 'var(--card)',
+                display: 'grid', placeItems: 'center', color: 'var(--text2)',
+                border: '1px solid var(--divider)', cursor: 'pointer',
+              }}
+            >
               <Icon d="refresh" size={19} />
-            </div>
-            <div style={{
-              width: 42, height: 42, borderRadius: 12, background: 'var(--card)',
-              display: 'grid', placeItems: 'center', color: 'var(--text2)',
-              border: '1px solid var(--divider)', cursor: 'pointer',
-            }}>
-              <Icon d="info" size={19} />
-            </div>
+            </button>
           </div>
 
           {/* Exercise image */}
@@ -160,8 +173,8 @@ export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx }
             {exercise.name}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
-            <span className="tag"><Icon d="target" size={12} />Цель: {targetSets} × {exercise.reps}</span>
-            <span className="tag" style={{ color: doneSets.length >= targetSets ? 'var(--success)' : 'var(--text2)' }}>
+            <span className="tag tag-muted"><Icon d="target" size={12} />Цель: {targetSets} × {exercise.reps}</span>
+            <span className={`tag ${doneSets.length >= targetSets ? 'tag-success' : 'tag-muted'}`}>
               Выполнено: {doneSets.length}/{targetSets}
             </span>
           </div>
@@ -174,23 +187,26 @@ export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx }
             />
           )}
 
-          {/* Set card */}
+          {/* Set input card */}
           {!resting && !finished && (
-            <div className="setcard">
-              <div className="setcard-h">
-                <span className="n">Подход {doneSets.length + 1}</span>
-                <span className="rest">
+            <div style={{
+              background: 'var(--elev)', borderRadius: 'var(--radius)',
+              padding: 16, border: '1.5px solid var(--divider)', marginTop: 14,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                <span style={{ fontSize: 15, fontWeight: 700 }}>Подход {doneSets.length + 1}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--text2)', fontWeight: 500 }}>
                   <Icon d="clock" size={15} />
                   Отдых {exercise.restSeconds ?? 90}с
                 </span>
               </div>
-              <div className="set-inputs">
-                <div className="set-field">
-                  <label>Вес, кг</label>
+              <div style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Вес, кг</label>
                   <Stepper value={weight} onChange={setWeight} step={0.5} min={0} max={300} />
                 </div>
-                <div className="set-field">
-                  <label>Повторений</label>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Повторений</label>
                   <Stepper value={reps} onChange={setReps} step={1} min={1} max={100} />
                 </div>
               </div>
@@ -202,9 +218,13 @@ export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx }
 
           {/* Finished badge */}
           {finished && (
-            <div className="aw-finish" style={{ marginTop: 18 }}>
-              <div className="t">Упражнение выполнено 💪</div>
-              <div className="d">Все {targetSets} подхода засчитаны</div>
+            <div style={{
+              background: 'rgba(0,230,118,0.08)', borderRadius: 'var(--radius)',
+              border: '1.5px solid rgba(0,230,118,0.25)', padding: 16, marginTop: 14,
+              textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--success)' }}>Упражнение выполнено 💪</div>
+              <div style={{ fontSize: 13, color: 'var(--text2)', marginTop: 4 }}>Все {targetSets} подхода засчитаны</div>
             </div>
           )}
 
@@ -215,8 +235,8 @@ export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx }
               <div className="donelist">
                 {doneSets.map((s, i) => (
                   <div key={i} className="doneset">
-                    <span className="num">{i + 1}</span>
-                    <span className="val">
+                    <span className="doneset-num">{i + 1}</span>
+                    <span className="doneset-detail">
                       {s.weight} кг <small>×</small> {s.reps} <small>повт.</small>
                     </span>
                     <Icon d="check" size={17} color="var(--success)" stroke={2.6} />
@@ -226,7 +246,7 @@ export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx }
             </>
           )}
 
-          {/* Exercise description */}
+          {/* Technique */}
           <div style={{
             background: 'var(--card)', borderRadius: 14,
             padding: 16, marginTop: 20,
@@ -248,20 +268,23 @@ export default function ActiveWorkout({ day, exIdx, onBack, onNext, onChangeEx }
             )}
           </div>
 
-          {/* Next exercise button */}
+          {/* Next / Finish button */}
           <button
             className="cta block"
             style={{
               marginTop: 18, marginBottom: 16,
-              background: finished ? 'var(--accent)' : 'var(--elev)',
+              background: finished ? undefined : 'var(--elev)',
               color: finished ? '#fff' : 'var(--text2)',
               boxShadow: finished ? undefined : 'none',
             }}
-            onClick={finished ? handleNextEx : undefined}
-            disabled={!finished}
+            onClick={finished && !saving ? handleNextEx : undefined}
+            disabled={!finished || saving}
           >
-            {exIdx < totalEx - 1 ? 'Следующее упражнение' : 'Завершить тренировку'}
-            <Icon d="chev" size={18} color={finished ? '#fff' : 'var(--text2)'} />
+            {saving
+              ? 'Сохранение...'
+              : exIdx < totalEx - 1 ? 'Следующее упражнение' : 'Завершить тренировку'
+            }
+            {!saving && <Icon d="chev" size={18} color={finished ? '#fff' : 'var(--text2)'} />}
           </button>
         </Pad>
       </ScrollBody>

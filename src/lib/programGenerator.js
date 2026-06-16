@@ -60,11 +60,6 @@ function pickExercises(groups, level) {
 }
 
 function adjustSetsReps(exercise, goal, level) {
-  // Mass gain: higher weight, lower reps (6-10)
-  // Fat loss: lower weight, higher reps (12-15) + shorter rest
-  const massMulti   = { beginner: 0.8, amateur: 1.0, pro: 1.2 }
-  const multi = massMulti[level] ?? 1.0
-
   if (goal === 'mass') {
     return {
       sets: exercise.sets,

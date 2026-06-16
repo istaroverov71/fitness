@@ -1342,3 +1342,185 @@ input[type="range"]::-moz-range-thumb {
 .overflow-hidden { overflow: hidden; }
 .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .shrink-0 { flex-shrink: 0; }
+
+/* ─── Panel Header ───────────────────────────────────────────── */
+.panel { margin-bottom: 14px; }
+
+.panel-h {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.panel-t {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.panel-sub {
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+/* ─── Stat aliases (Analytics uses .stat/.stat-v/.stat-l) ───── */
+.stat {
+  background: var(--elev);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-v {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.stat-v small {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-left: 2px;
+  letter-spacing: 0;
+}
+
+.stat-l {
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.stat-trend {
+  font-size: 11px;
+  color: var(--success);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ─── Legend aliases ─────────────────────────────────────────── */
+.legdot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.legval {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text2);
+}
+
+/* ─── Stepper ────────────────────────────────────────────────── */
+.stepper {
+  display: flex;
+  align-items: center;
+  background: var(--elev);
+  border-radius: var(--radius);
+  border: 1.5px solid var(--divider);
+  overflow: hidden;
+}
+
+.stepper button {
+  width: 48px;
+  height: 52px;
+  border: none;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--text2);
+  flex-shrink: 0;
+  transition: background var(--transition), color var(--transition);
+}
+
+.stepper button:active {
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--accent);
+}
+
+.stepper-v {
+  flex: 1;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  border-left: 1.5px solid var(--divider);
+  border-right: 1.5px solid var(--divider);
+  padding: 12px 0;
+}
+
+.stepper-v small {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-left: 2px;
+}
+
+/* ─── Profile row aliases ────────────────────────────────────── */
+.frow-ic {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--elev);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text2);
+}
+
+.frow-l {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.frow-v {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text2);
+}
+
+/* ─── Weight big display ─────────────────────────────────────── */
+.weight-big {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.weight-big .v {
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: var(--text);
+}
+
+.weight-big .v small {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-left: 4px;
+  letter-spacing: 0;
+}
+
+.weight-big .g {
+  font-size: 14px;
+  color: var(--text2);
+  font-weight: 500;
+  line-height: 1.4;
+}

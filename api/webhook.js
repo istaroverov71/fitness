@@ -1,5 +1,4 @@
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN
-const APP_URL = 'https://fitness-beta-sage.vercel.app'
 
 async function sendMessage(chatId, text, extra = {}) {
   await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {

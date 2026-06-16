@@ -66,8 +66,8 @@ test('Can log a set and see it in done list', async ({ page }) => {
   await page.locator('[style*="cursor: pointer"]').first().click()
   await page.getByRole('button', { name: /Начать тренировку/ }).click()
 
-  // Click "Записать подход"
-  const logBtn = page.getByRole('button', { name: /Записать/ })
+  // Click "Засчитать подход"
+  const logBtn = page.getByRole('button', { name: /Засчитать/ })
   await expect(logBtn).toBeVisible({ timeout: 4000 })
   await logBtn.click()
 
@@ -81,8 +81,8 @@ test('Tab bar: can navigate to Exercises tab', async ({ page }) => {
   await completeOnboarding(page)
 
   // Click exercises tab
-  await page.getByText('Упражнения').click()
-  await expect(page.getByText('Группы мышц')).toBeVisible({ timeout: 3000 })
+  await page.getByRole('button', { name: 'Упражнения' }).click()
+  await expect(page.getByText('справочник')).toBeVisible({ timeout: 3000 })
 })
 
 test('Tab bar: can navigate to Analytics tab', async ({ page }) => {

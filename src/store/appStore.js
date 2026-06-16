@@ -106,6 +106,8 @@ export const useAppStore = create(
         currentCycleDay: state.currentCycleDay,
         workoutHistory:  state.workoutHistory,
         bodyWeightLog:   state.bodyWeightLog,
+        activeWorkout:   state.activeWorkout,
+        workoutLogs:     state.workoutLogs,
       }),
     }
   )

@@ -29,13 +29,20 @@ export default function HomeDashboard({ onOpenDay, onProfile }) {
   const currentDay  = program.days[cycleDay % totalDays]
 
   // Next 3 workouts in the queue
+  const todayStr = new Date().toDateString()
   const upcoming = [0, 1, 2].map(offset => {
     const idx = (cycleDay + offset) % totalDays
-    return { ...program.days[idx], offset, done: offset === 0 && history[0]?.cycleDay === cycleDay }
+    const done = offset === 0 && history.length > 0 &&
+      new Date(history[0].endTime || history[0].id).toDateString() === todayStr
+    return { ...program.days[idx], offset, done }
   })
 
-  // Muscle load stats from history (last 7 sessions)
-  const recent = history.slice(0, 7)
+  // Muscle load stats filtered by tab
+  const filterMs = mgTab === 'Неделя' ? 7 * 86400000 : mgTab === 'Месяц' ? 30 * 86400000 : Infinity
+  const cutoff = Date.now() - filterMs
+  const recent = mgTab === 'Всё время'
+    ? history
+    : history.filter(s => (s.startTime || s.id) >= cutoff)
   const mgLoad = {}
   recent.forEach(session => {
     session.day?.groups?.forEach(g => {
